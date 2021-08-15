@@ -1,0 +1,3 @@
+### Hello World
+
+This package holds personal notes and solutions to the activities in the Rust by Example book Chapter 1: Hello World
