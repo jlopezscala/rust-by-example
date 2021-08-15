@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::fmt::{Display, Formatter};
 use std::fmt;
 
 
@@ -24,6 +24,7 @@ fn main() {
     #[allow(dead_code)]
     struct Structure(i32);
 
+    // Implement the Display
     impl Display for Structure {
         // This is king of implementing toString in Java or __str__ in Python.
         // See also implementing Debug.
@@ -40,6 +41,7 @@ fn main() {
     }
     println!("This struct `{}` prints...", Structure(3));
 
+    // ##############################################################################
 
     // 2- Add a println! macro that prints: Pi is roughly 3.142 by controlling the number of
     // decimal places shown. For the purposes of this exercise, use let pi = 3.141592 as an
@@ -48,4 +50,89 @@ fn main() {
     let pi = 3.141592;
 
     println!("Pi is roughly {0:.3}", pi); // This will tell Rust to only print 3 decimals after the ,
+
+    // ##############################################################################
+
+    // DEBUG Trait
+
+    // Contrary to the Display trait, the Debug one can be easily implemented:
+    #[derive(Debug)]
+    struct Structure2(i32);
+
+    // Even for nested structs, will make both printable with :? formatter
+    #[derive(Debug)]
+    struct Deep(Structure2);
+
+    // so now this works
+    println!("My Structure2: {:?}", Structure2(2));
+
+    // and more pretty
+    println!("My Structure2 pretty: {:#?}", Structure2(2));
+
+    // ##############################################################################
+    // Implementing Display vs Debug
+    // A structure holding two numbers. `Debug` will be derived so the results can
+    // be contrasted with `Display`.
+    #[derive(Debug)]
+    struct MinMax(i64, i64);
+
+    // Implement `Display` for `MinMax`.
+    impl fmt::Display for MinMax {
+        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            // Use `self.number` to refer to each positional data point.
+            write!(f, "({}, {})", self.0, self.1)
+        }
+    }
+
+    let big_range =   MinMax(-300, 300);
+    let small_range = MinMax(-3, 3);
+
+    // This should work now!
+    println!("The big range is {big} and the small is {small}",
+             small = small_range,
+             big = big_range);
+
+    // Define a structure where the fields are nameable for comparison.
+    #[derive(Debug)]
+    struct Point2D {
+        x: f64,
+        y: f64,
+    }
+    // Similarly, implement `Display` for `Point2D`
+    impl fmt::Display for Point2D {
+        fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+            // Customize so only `x` and `y` are denoted.
+            write!(f, "x: {}, y: {}", self.x, self.y)
+        }
+    }
+
+    let point = Point2D { x: 3.3, y: 7.2 };
+
+    // Both of these work now since Debug and Display are implemented
+    println!("Compare points:");
+    println!("Display: {}", point);
+    println!("Debug: {:?}", point);
+
+    // Activity
+    // After checking the output of the above example, use the Point2D struct as a guide
+    // to add a Complex struct to the example. When printed in the same way,
+    // the output should be:
+    // Display: 3.3 + 7.2i
+    // Debug: Complex { real: 3.3, imag: 7.2 }
+
+    #[derive(Debug)]
+    struct Complex {
+        real: f64,
+        imag: f64,
+    }
+    impl fmt::Display for Complex {
+        fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+            // Customize so only `x` and `y` are denoted.
+            write!(f, "{}, {}i", self.real, self.imag)
+        }
+    }
+    let complex = Complex { real: 3.3, imag: 7.2};
+    println!("Display: {}", complex);
+    println!("Debug: {:?}", complex);
+
 }
